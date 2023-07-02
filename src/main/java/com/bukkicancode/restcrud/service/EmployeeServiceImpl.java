@@ -1,45 +1,52 @@
 package com.bukkicancode.restcrud.service;
 
-import com.bukkicancode.restcrud.dao.EmployeeDAO;
+import com.bukkicancode.restcrud.dao.EmployeeRepository;
 import com.bukkicancode.restcrud.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
-    private EmployeeDAO employeeDAO;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO){
-        this.employeeDAO = employeeDAO;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository){
+        this.employeeRepository = employeeRepository;
 
     }
     @Override
     public List<Employee> findAll() {
-        return employeeDAO.findAll();
+
+        return employeeRepository.findAll();
     }
 
     @Override
-    public Employee findById(int studId) {
+    public Employee findById(int empId) {
 
-        return employeeDAO.findById(studId);
+        Optional<Employee>  result= employeeRepository.findById(empId);
+        Employee employee = null;
+        if(result.isPresent()){
+            employee = result.get();
+
+        }else{
+            throw new RuntimeException("Not found employee with id - "+ empId);
+        }
+        return employee;
     }
 
     @Override
-    @Transactional
     public Employee save(Employee employee) {
-        employeeDAO.save(employee);
+        employeeRepository.save(employee);
         return employee;
 
     }
-
     @Override
-    @Transactional
-    public void delete(int employeeId) {
-        employeeDAO.delete(employeeId);
+    public void deleteById(int employeeId) {
+        employeeRepository.deleteById(employeeId);
 
     }
 }
